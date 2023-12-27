@@ -39,13 +39,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import courses from './courses';
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -210,10 +208,12 @@ export default function creatorCourses ()  {
   </DialogContent>
  </Dialog>
 </div>
-<div>
+<div className='flex justify-end'>
+<div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 w-4/5'>
 {listings?.data?.map((course) => (
     <Cards key={course.id} course={course} />
   ))}
+</div>
 </div>
     </div>
   )
