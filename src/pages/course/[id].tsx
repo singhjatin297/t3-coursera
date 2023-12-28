@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { type Course } from "@prisma/client";
 import { api } from '@/utils/api'
-import { useQuery } from '@tanstack/react-query'
 import {
   Sheet,
   SheetContent,
@@ -18,20 +17,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import {
-  Dialog,
-  DialogContent,
-  DialogClose,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { useForm, SubmitHandler } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { useForm, SubmitHandler } from "react-hook-form"
 import { useRouter } from "next/router";
 import { Textarea } from "@/components/ui/textarea"
 import * as z from "zod"
@@ -44,6 +34,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { DevTool } from "@hookform/devtools"
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -57,32 +48,20 @@ const formSchema = z.object({
   }),
 })
 
-function Cards({course}: {course: Course}) {
-  return (
-    <Card className="w-[350px]">
-      <CardHeader>
-        <CardTitle>{course.title}</CardTitle>
-        <CardDescription>{course.description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-      {course.description}
-      {course.price}
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Delete</Button>
-        <Link href={`/course/${course.id}`}>
-        <Button>View</Button>
-        </Link>
-      </CardFooter>
-    </Card>
-  )
-}
 
+export default function ListingView ({course}: {course: Course})  {
+    const router = useRouter();
 
-export default function creatorCourses ()  {
-
-  const createPost = api.post.createCourse.useMutation();
-  const listings = api.getByCreatorId.GetByCreatorId.useQuery();
+    const getC = api.get.getById.useQuery(
+        {
+            listingId: router.query.id as string
+        },
+        {
+            enabled: !!router.query.id,
+        }
+      );    
+    
+  const editC = api.editCourse.editCourse.useMutation();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -96,9 +75,7 @@ export default function creatorCourses ()  {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    createPost.mutateAsync({
-      ...values,
-    })
+   
 
     console.log(values)
     form.reset();
@@ -144,18 +121,15 @@ export default function creatorCourses ()  {
 </div>
 
 <div className='flex justify-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl py-2 text-slate-300'>
-        CREATED COURSES
+    CREATED COURSES
 </div>
 <div className='flex justify-center text-slate-300 py-8'>
- <Dialog>
-  <DialogTrigger asChild>
-    <Button className="border-slate-500 border-2" variant="outline">ADD COURSE</Button>
-  </DialogTrigger>
-  <DialogContent className="sm:max-w[425px]">
-  <DialogHeader>
-      <DialogTitle className='flex justify-center'>Add new Course</DialogTitle>
-  </DialogHeader> 
-    <Form {...form}>
+<Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Edit your Course</CardTitle>
+      </CardHeader>
+      <CardContent>
+      <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
@@ -164,7 +138,7 @@ export default function creatorCourses ()  {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Name your title" {...field} />
+                      <Input defaultValue={getC.data?.title} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,9 +153,8 @@ export default function creatorCourses ()  {
                     <FormControl>
                       <Textarea
                          id="description"
-                         placeholder="Add description"
+                         defaultValue={getC.data?.description}
                          className="col-span-3"
-                         {...field}
                        />
                     </FormControl>
                   </FormItem>
@@ -194,29 +167,20 @@ export default function creatorCourses ()  {
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input placeholder="Price" {...field} />
+                      <Input defaultValue={getC.data?.price} />
                     </FormControl>
                   </FormItem>
                 )}
               />
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="submit">Submit</Button>
-          </DialogClose>  
-        </DialogFooter>
         </form>
       </Form>
-  </DialogContent>
- </Dialog>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button variant="outline">Delete</Button>
+        <Button>Submit</Button>
+      </CardFooter>
+    </Card>
+  </div>
 </div>
-<div className='flex justify-end'>
-<div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 w-4/5'>
-{listings?.data?.map((course) => (
-    <Cards key={course.id} course={course} />
-  ))}
-</div>
-</div>
-    </div>
   )
 }
