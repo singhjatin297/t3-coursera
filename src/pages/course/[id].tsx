@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { type Course } from "@prisma/client";
 import { api } from '@/utils/api'
 import {
@@ -34,7 +34,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { DevTool } from "@hookform/devtools"
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -66,19 +65,33 @@ export default function ListingView ({course}: {course: Course})  {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      price: "",
-    },
-  })
+        title: "",
+        description:"",
+        price:"",
+      },
+  });
+
+  const { register, handleSubmit, formState, setValue } = form;
+
+  useEffect(() => {
+    if (getC.data) {
+      setValue("title", getC.data.title);
+      setValue("description", getC.data.description);
+      setValue("price", getC.data.price);
+    }
+  }, [getC.data, setValue]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-   
+   editC.mutate({
+    title: values.title,
+    description: values.description,
+    price: values.price,
+    listingId: router.query.id as string
+   })
 
     console.log(values)
-    form.reset();
   }
  
 
@@ -138,9 +151,9 @@ export default function ListingView ({course}: {course: Course})  {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input defaultValue={getC.data?.title} />
+                      <Input {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage>{formState.errors.title?.message}</FormMessage>
                   </FormItem>
                 )}
               />
@@ -153,10 +166,11 @@ export default function ListingView ({course}: {course: Course})  {
                     <FormControl>
                       <Textarea
                          id="description"
-                         defaultValue={getC.data?.description}
                          className="col-span-3"
+                         {...field}
                        />
                     </FormControl>
+                    <FormMessage>{formState.errors.description?.message}</FormMessage>
                   </FormItem>
                 )}
               />
@@ -167,18 +181,19 @@ export default function ListingView ({course}: {course: Course})  {
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input defaultValue={getC.data?.price} />
+                      <Input {...field} />
                     </FormControl>
+                    <FormMessage>{formState.errors.price?.message}</FormMessage>
                   </FormItem>
                 )}
               />
-        </form>
-      </Form>
+            <CardFooter className="flex justify-between">
+                <Button variant="outline">Delete</Button>
+                <Button type="submit">Submit</Button>
+            </CardFooter>
+           </form>
+          </Form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Delete</Button>
-        <Button>Submit</Button>
-      </CardFooter>
     </Card>
   </div>
 </div>
