@@ -90,8 +90,8 @@ export default function ListingView ({course}: {course: Course})  {
     price: values.price,
     listingId: router.query.id as string
    })
-
     console.log(values)
+    router.push('/createdCourse');
   }
  
 
