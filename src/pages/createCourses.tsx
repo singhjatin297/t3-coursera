@@ -62,11 +62,12 @@ function Cards({course}: {course: Course}) {
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>{course.title}</CardTitle>
-        <CardDescription>{course.description}</CardDescription>
+        {/* <CardDescription>{course.description}</CardDescription> */}
       </CardHeader>
       <CardContent>
       {course.description}
-      {course.price}
+      <br />
+      ₹{course.price}
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">Delete</Button>
