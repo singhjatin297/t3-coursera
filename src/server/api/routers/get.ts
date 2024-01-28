@@ -20,6 +20,21 @@ export const getRouter = createTRPCRouter({
           id: input.listingId,
         }
       })
-    })
+    }),
+
+    getPurchase: protectedProcedure
+    .query( async ({ctx}) => {
+      const userId = ctx.auth.userId;
+
+      if (!userId) {
+          throw new TRPCError({ code: "UNAUTHORIZED" });
+       }
+    const purchasedCourse = await ctx.prisma.purchase.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    return purchasedCourse;
+  })
 
 });

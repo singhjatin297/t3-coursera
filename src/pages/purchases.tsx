@@ -17,8 +17,34 @@ import {
 } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { type Course } from "@prisma/client";
+import { api } from '@/utils/api'
+import { type Purchase } from '@prisma/client'
+
+function Cards({purchase}: {purchase: Purchase}) {
+  return (
+    <Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>{purchase.title}</CardTitle>
+        {/* <CardDescription>{course.description}</CardDescription> */}
+      </CardHeader>
+      <CardContent>
+      {purchase.description}
+      <br />
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Link href={`/viewCourse/${purchase.id}`}>
+        <Button>view</Button>
+        </Link>
+      </CardFooter>
+    </Card>
+  )
+}
 
 export default function purchases() {
+  
+  const boughtCourse = api.get.getPurchase.useQuery();
+  
   return (
     <div>
       <div className='flex flex-col left-0 fixed p-3 w-1/4'>
@@ -59,6 +85,13 @@ export default function purchases() {
 
 <div className='flex justify-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl py-2 text-slate-300'>
         MY COURSES
+      </div>
+      <div className='flex justify-end mt-8'>
+       <div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-6 w-4/5'>
+        {boughtCourse?.data?.map((purchase) => (
+    <Cards key={purchase.id} purchase={purchase} />
+  ))}
+       </div>
       </div>
     </div>
   )

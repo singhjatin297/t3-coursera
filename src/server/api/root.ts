@@ -3,6 +3,7 @@ import { createTRPCRouter } from "../../server/api/trpc";
 import { getRouter } from "./routers/get";
 import { getByCreatorIdRouter } from "./routers/getByCreatorId";
 import {editRouter} from "./routers/edit";
+import { buyCourseRouter } from "./routers/buy";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   get: getRouter,
   getByCreatorId: getByCreatorIdRouter,
   editCourse: editRouter,
+  buyCourse: buyCourseRouter
 });
 
 // export type definition of API

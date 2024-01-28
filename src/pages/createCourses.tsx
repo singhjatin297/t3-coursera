@@ -62,7 +62,6 @@ function Cards({course}: {course: Course}) {
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>{course.title}</CardTitle>
-        {/* <CardDescription>{course.description}</CardDescription> */}
       </CardHeader>
       <CardContent>
       {course.description}

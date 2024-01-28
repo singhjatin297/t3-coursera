@@ -25,22 +25,21 @@ function Cards({course}: {course: Course}) {
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>{course.title}</CardTitle>
-        <CardDescription>{course.description}</CardDescription>
+        {/* <CardDescription>{course.description}</CardDescription> */}
       </CardHeader>
       <CardContent>
       {course.description}
-      {course.price}
+      <br />
+      ₹{course.price}
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Link href={`/course/${course.id}`}>
-        <Button>Deploy</Button>
+        <Link href={`/viewCourse/${course.id}`}>
+        <Button>view</Button>
         </Link>
       </CardFooter>
     </Card>
   )
 }
-
 
 export default function courses() {
 
